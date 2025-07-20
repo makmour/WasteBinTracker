@@ -128,6 +128,7 @@ export default function StreetSelector({ value, onChange, location, className }:
         {/* Mode Selection */}
         <div className="flex space-x-2">
           <Button
+            type="button"
             variant={viewMode === "nearby" ? "default" : "outline"}
             size="sm"
             onClick={() => handleModeChange("nearby")}
@@ -138,6 +139,7 @@ export default function StreetSelector({ value, onChange, location, className }:
             <span>Nearby</span>
           </Button>
           <Button
+            type="button"
             variant={viewMode === "search" ? "default" : "outline"}
             size="sm"
             onClick={() => handleModeChange("search")}
@@ -147,6 +149,7 @@ export default function StreetSelector({ value, onChange, location, className }:
             <span>Search</span>
           </Button>
           <Button
+            type="button"
             variant={viewMode === "all" ? "default" : "outline"}
             size="sm"
             onClick={() => handleModeChange("all")}
@@ -187,6 +190,7 @@ export default function StreetSelector({ value, onChange, location, className }:
                   {filteredStreets.map((street) => (
                     <Button
                       key={street}
+                      type="button"
                       variant={value === street ? "default" : "ghost"}
                       size="sm"
                       onClick={() => handleStreetSelect(street)}
