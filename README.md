@@ -3,11 +3,11 @@
 
 A mobile-first Progressive Web App (PWA) designed for municipal waste supervisors and field workers to collect and export data about street waste bin locations with GPS coordinates, photos, and comments while supporting offline functionality.
 
-## 🎯 Overview
+## Overview
 
 This application was developed as an MVP for Glyfada Municipality in Greece, with plans to expand to all Greek municipalities. It enables systematic surveying of waste bin distribution across municipality streets while working offline in the field.
 
-## ✨ Features
+## Features
 
 ### Core Functionality
 - **GPS-based bin logging** with real-time location capture
@@ -33,7 +33,7 @@ This application was developed as an MVP for Glyfada Municipality in Greece, wit
 - **Responsive design** for all screen sizes
 - **Bottom navigation** for easy mobile access
 
-## 🛠 Tech Stack
+## Tech Stack
 
 ### Frontend
 - **React** with TypeScript
@@ -54,7 +54,7 @@ This application was developed as an MVP for Glyfada Municipality in Greece, wit
 - **ESBuild** for production builds
 - **Drizzle Kit** for database migrations
 
-## 📱 Usage
+## Usage
 
 ### Typical Workflow
 1. **Navigate** to a street location
@@ -70,7 +70,7 @@ This application was developed as an MVP for Glyfada Municipality in Greece, wit
 - **Search**: Type to find specific streets
 - **Browse**: View complete municipality street list
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js (v18 or higher)
@@ -110,7 +110,7 @@ npm run dev
 
 The application will be available at `http://localhost:5000`
 
-## 📊 Data Model
+## Data Model
 
 The application stores survey entries with the following fields:
 
@@ -128,7 +128,7 @@ The application stores survey entries with the following fields:
 | comments | Text | No | Optional notes |
 | synced | Boolean | Yes | Export/sync status |
 
-## 📤 Export Formats
+## Export Formats
 
 ### CSV Export
 - UTF-8 encoded
@@ -141,7 +141,7 @@ The application stores survey entries with the following fields:
 - All survey data as feature properties
 - Compatible with GIS applications
 
-## 🔧 Development
+## Development
 
 ### Available Scripts
 
@@ -180,7 +180,7 @@ npm run db:push
 └── uploads/              # Photo storage directory
 ```
 
-## 🌍 Deployment
+## Deployment
 
 This application is designed to be deployed on Replit with automatic scaling and deployment capabilities.
 
@@ -190,13 +190,13 @@ This application is designed to be deployed on Replit with automatic scaling and
 
 ## 🗺 Street Data
 
-The application includes a comprehensive database of Glyfada Municipality streets. For other municipalities:
+The application features a comprehensive database of streets in Glyfada Municipality. For other municipalities:
 
 1. Update the street data in the database
 2. Modify the municipality field in the schema
-3. Adjust GPS filtering radius as needed
+3. Adjust the GPS filtering radius as needed
 
-## 📱 PWA Features
+## PWA Features
 
 - **Offline functionality** with service worker
 - **Add to home screen** on mobile devices
@@ -204,7 +204,7 @@ The application includes a comprehensive database of Glyfada Municipality street
 - **Background sync** capabilities
 - **Push notifications** ready (future enhancement)
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -212,15 +212,15 @@ The application includes a comprehensive database of Glyfada Municipality street
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙋‍♂️ Support
+## Support
 
 For support, please open an issue on GitHub or contact the development team.
 
-## 🎯 Roadmap
+## Roadmap
 
 - [ ] Multi-municipality support
 - [ ] Advanced reporting and analytics
