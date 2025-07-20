@@ -188,7 +188,7 @@ This application is designed to be deployed on Replit with automatic scaling and
 - `DATABASE_URL`: PostgreSQL connection string
 - `NODE_ENV`: Environment (development/production)
 
-## 🗺 Street Data
+## Street Data
 
 The application features a comprehensive database of streets in Glyfada Municipality. For other municipalities:
 
