@@ -17,8 +17,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Save, RotateCcw, MapPin, RefreshCw } from "lucide-react";
 
-const formSchema = insertBinSurveyEntrySchema.extend({
-  binTypes: insertBinSurveyEntrySchema.shape.binTypes.min(1, "Please count at least one bin type"),
+const formSchema = insertBinSurveyEntrySchema.omit({
+  binTypes: true,
+  quantity: true,
 });
 
 interface BinCounts {
@@ -41,14 +42,12 @@ export default function SurveyForm() {
     Yellow: 0,
   });
 
-  const form = useForm<InsertBinSurveyEntry>({
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       street: "",
       latitude: 0,
       longitude: 0,
-      binTypes: [],
-      quantity: 0,
       photoUri: null,
       comments: "",
     },
@@ -87,6 +86,7 @@ export default function SurveyForm() {
 
   const createEntryMutation = useMutation({
     mutationFn: async (data: InsertBinSurveyEntry) => {
+      console.log("Submitting data:", data);
       const response = await apiRequest("POST", "/api/entries", data);
       return response.json();
     },
@@ -113,7 +113,7 @@ export default function SurveyForm() {
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
-  const onSubmit = (data: InsertBinSurveyEntry) => {
+  const onSubmit = (data: any) => {
     if (!location) {
       toast({
         title: "Location required",
@@ -141,13 +141,21 @@ export default function SurveyForm() {
       }
     });
 
-    createEntryMutation.mutate({
-      ...data,
+    const submissionData: InsertBinSurveyEntry = {
+      street: data.street,
       latitude: location.latitude,
       longitude: location.longitude,
       binTypes,
       quantity: totalCount,
-    });
+      photoUri: null,
+      comments: data.comments || null,
+    };
+
+    console.log("Bin counts:", binCounts);
+    console.log("Total count:", totalCount);
+    console.log("Submission data:", submissionData);
+
+    createEntryMutation.mutate(submissionData);
   };
 
   const handleSaveDraft = () => {
