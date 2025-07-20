@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { History, Download, Settings } from "lucide-react";
+import { History, Download, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { exportData } from "@/lib/export";
@@ -52,13 +52,15 @@ export default function BottomNav({ unsyncedCount }: BottomNavProps) {
           <span className="text-xs font-medium">Export</span>
         </Button>
         
-        <Button
-          variant="ghost"
-          className="flex flex-col items-center space-y-1 py-2 h-auto"
-        >
-          <Settings className="w-5 h-5" />
-          <span className="text-xs font-medium">Settings</span>
-        </Button>
+        <Link href="/reports">
+          <Button
+            variant="ghost"
+            className="flex flex-col items-center space-y-1 py-2 h-auto"
+          >
+            <BarChart3 className="w-5 h-5" />
+            <span className="text-xs font-medium">Reports</span>
+          </Button>
+        </Link>
       </div>
     </footer>
   );

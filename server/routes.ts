@@ -135,6 +135,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Reset all entries for a specific street
+  app.delete("/api/streets/:street/reset", async (req, res) => {
+    try {
+      const street = decodeURIComponent(req.params.street);
+      const deletedCount = await storage.deleteEntriesByStreet(street);
+      
+      res.json({ 
+        message: `Deleted ${deletedCount} entries for ${street}`,
+        deletedCount 
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to reset street data" });
+    }
+  });
+
   // Export entries as CSV
   app.get("/api/export/csv", async (req, res) => {
     try {

@@ -151,10 +151,6 @@ export default function SurveyForm() {
       comments: data.comments || null,
     };
 
-    console.log("Bin counts:", binCounts);
-    console.log("Total count:", totalCount);
-    console.log("Submission data:", submissionData);
-
     createEntryMutation.mutate(submissionData);
   };
 

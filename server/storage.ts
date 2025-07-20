@@ -16,6 +16,7 @@ export interface IStorage {
   deleteBinSurveyEntry(id: number): Promise<boolean>;
   getUnsyncedEntries(): Promise<BinSurveyEntry[]>;
   markAsSynced(id: number): Promise<boolean>;
+  deleteEntriesByStreet(street: string): Promise<number>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -92,6 +93,13 @@ export class DatabaseStorage implements IStorage {
       .set({ synced: true })
       .where(eq(binSurveyEntries.id, id));
     return (result.rowCount || 0) > 0;
+  }
+
+  async deleteEntriesByStreet(street: string): Promise<number> {
+    const result = await db
+      .delete(binSurveyEntries)
+      .where(eq(binSurveyEntries.street, street));
+    return result.rowCount || 0;
   }
 }
 
