@@ -6,31 +6,40 @@ import { insertBinSurveyEntrySchema, GLYFADA_STREETS, BIN_TYPES, type InsertBinS
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useGeolocation } from "@/hooks/use-geolocation";
-import { useCamera } from "@/hooks/use-camera";
 import { useOffline } from "@/hooks/use-offline";
 import Header from "@/components/ui/header";
 import LocationCard from "@/components/ui/location-card";
-import BinTypeSelector from "@/components/ui/bin-type-selector";
-import PhotoCapture from "@/components/ui/photo-capture";
+import BinCounter from "@/components/ui/bin-counter";
 import BottomNav from "@/components/ui/bottom-nav";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Save, RotateCcw, MapPin } from "lucide-react";
+import { Save, RotateCcw, MapPin, RefreshCw } from "lucide-react";
 
 const formSchema = insertBinSurveyEntrySchema.extend({
-  binTypes: insertBinSurveyEntrySchema.shape.binTypes.min(1, "Please select at least one bin type"),
-  quantity: insertBinSurveyEntrySchema.shape.quantity.min(1, "Quantity must be at least 1"),
+  binTypes: insertBinSurveyEntrySchema.shape.binTypes.min(1, "Please count at least one bin type"),
 });
+
+interface BinCounts {
+  Green: number;
+  Blue: number;
+  Brown: number;
+  Yellow: number;
+}
 
 export default function SurveyForm() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { location, accuracy, isLoading: locationLoading, refreshLocation } = useGeolocation();
-  const { capturePhoto, photoData, removePhoto } = useCamera();
   const { isOffline } = useOffline();
+  
+  const [binCounts, setBinCounts] = useState<BinCounts>({
+    Green: 0,
+    Blue: 0,
+    Brown: 0,
+    Yellow: 0,
+  });
 
   const form = useForm<InsertBinSurveyEntry>({
     resolver: zodResolver(formSchema),
@@ -39,8 +48,8 @@ export default function SurveyForm() {
       latitude: 0,
       longitude: 0,
       binTypes: [],
-      quantity: 1,
-      photoUri: "",
+      quantity: 0,
+      photoUri: null,
       comments: "",
     },
   });
@@ -53,22 +62,32 @@ export default function SurveyForm() {
     }
   }, [location, form]);
 
+  const handleIncrementBin = (type: keyof BinCounts) => {
+    setBinCounts(prev => ({
+      ...prev,
+      [type]: prev[type] + 1
+    }));
+  };
+
+  const handleDecrementBin = (type: keyof BinCounts) => {
+    setBinCounts(prev => ({
+      ...prev,
+      [type]: Math.max(0, prev[type] - 1)
+    }));
+  };
+
+  const handleResetCounts = () => {
+    setBinCounts({
+      Green: 0,
+      Blue: 0,
+      Brown: 0,
+      Yellow: 0,
+    });
+  };
+
   const createEntryMutation = useMutation({
     mutationFn: async (data: InsertBinSurveyEntry) => {
-      const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        if (key === "binTypes") {
-          formData.append(key, JSON.stringify(value));
-        } else if (value !== null && value !== undefined) {
-          formData.append(key, value.toString());
-        }
-      });
-
-      if (photoData) {
-        formData.append("photo", photoData);
-      }
-
-      const response = await apiRequest("POST", "/api/entries", formData);
+      const response = await apiRequest("POST", "/api/entries", data);
       return response.json();
     },
     onSuccess: () => {
@@ -78,7 +97,7 @@ export default function SurveyForm() {
         description: isOffline ? "Data saved locally and will sync when online" : "Data saved to server",
       });
       form.reset();
-      removePhoto();
+      handleResetCounts();
     },
     onError: (error) => {
       toast({
@@ -104,10 +123,30 @@ export default function SurveyForm() {
       return;
     }
 
+    const totalCount = Object.values(binCounts).reduce((sum, count) => sum + count, 0);
+    if (totalCount === 0) {
+      toast({
+        title: "No bins counted",
+        description: "Please count at least one bin before submitting",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Convert bin counts to arrays for the API
+    const binTypes: string[] = [];
+    Object.entries(binCounts).forEach(([type, count]) => {
+      for (let i = 0; i < count; i++) {
+        binTypes.push(type);
+      }
+    });
+
     createEntryMutation.mutate({
       ...data,
       latitude: location.latitude,
       longitude: location.longitude,
+      binTypes,
+      quantity: totalCount,
     });
   };
 
@@ -161,60 +200,16 @@ export default function SurveyForm() {
               )}
             />
 
-            {/* Bin Type Selection */}
-            <FormField
-              control={form.control}
-              name="binTypes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Bin Type <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <BinTypeSelector
-                      value={field.value}
-                      onChange={field.onChange}
-                      options={BIN_TYPES}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Number of Bins */}
-            <FormField
-              control={form.control}
-              name="quantity"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Number of Bins <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      min="1"
-                      max="20"
-                      className="bg-gray-50"
-                      {...field}
-                      onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Photo Section */}
+            {/* Bin Counter */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-700">
-                Photo (optional)
+                Count Bins as You Walk <span className="text-red-500">*</span>
               </label>
-              <PhotoCapture
-                photoData={photoData}
-                onCapturePhoto={capturePhoto}
-                onRemovePhoto={removePhoto}
+              <BinCounter
+                counts={binCounts}
+                onIncrement={handleIncrementBin}
+                onDecrement={handleDecrementBin}
+                onReset={handleResetCounts}
               />
             </div>
 
