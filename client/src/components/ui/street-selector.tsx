@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Search, MapPin, Clock } from "lucide-react";
+import { Search, MapPin, Clock, Plus, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -52,6 +52,8 @@ export default function StreetSelector({ value, onChange, location, className }:
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"nearby" | "search" | "all">("nearby");
   const [selectedMunicipality] = useState("Glyfada"); // For now, always Glyfada
+  const [customStreet, setCustomStreet] = useState("");
+  const [showCustomInput, setShowCustomInput] = useState(false);
 
   const municipality = MUNICIPALITIES.find(m => m.name === selectedMunicipality);
   
@@ -101,10 +103,29 @@ export default function StreetSelector({ value, onChange, location, className }:
   const handleModeChange = (mode: "nearby" | "search" | "all") => {
     setViewMode(mode);
     setSearchTerm("");
+    setShowCustomInput(false);
+    setCustomStreet("");
   };
 
   const handleStreetSelect = (street: string) => {
     onChange(street);
+    setShowCustomInput(false);
+    setCustomStreet("");
+  };
+
+  const handleCustomStreetSubmit = () => {
+    if (customStreet.trim()) {
+      onChange(customStreet.trim());
+      setShowCustomInput(false);
+      setCustomStreet("");
+    }
+  };
+
+  const handleToggleCustomInput = () => {
+    setShowCustomInput(!showCustomInput);
+    if (showCustomInput) {
+      setCustomStreet("");
+    }
   };
 
   return (
@@ -227,6 +248,57 @@ export default function StreetSelector({ value, onChange, location, className }:
             {viewMode === "search" && searchTerm ? "No streets found" : "No streets available"}
           </div>
         )}
+
+        {/* Add Custom Street Option */}
+        <div className="mt-3 border-t pt-3">
+          {!showCustomInput ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleToggleCustomInput}
+              className="w-full flex items-center justify-center space-x-2"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add street manually</span>
+            </Button>
+          ) : (
+            <div className="space-y-2">
+              <div className="flex space-x-2">
+                <div className="flex-1">
+                  <Input
+                    placeholder="Enter street name (e.g., Mikras Asias)"
+                    value={customStreet}
+                    onChange={(e) => setCustomStreet(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleCustomStreetSubmit()}
+                    className="text-sm"
+                  />
+                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={handleCustomStreetSubmit}
+                  disabled={!customStreet.trim()}
+                  className="px-3"
+                >
+                  <Check className="w-4 h-4" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleToggleCustomInput}
+                  className="px-3"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+              <div className="text-xs text-gray-500">
+                For streets not in our database (like "Mikras Asias")
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Current Selection Display */}
         {value && (

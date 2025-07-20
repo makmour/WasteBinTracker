@@ -179,6 +179,7 @@ export const GLYFADA_STREETS = [
   "Messinias",
   "Metaxa",
   "Miaouli",
+  "Mikras Asias",
   "Militiadou",
   "Mirson",
   "Monastiraki",
