@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a mobile-first web application designed for municipal waste supervisors and field workers in Glyfada Municipality to collect and export data about street waste bin locations. The application allows users to log waste bins with GPS coordinates, photos, and other details while supporting offline functionality.
+This is a mobile-first web application designed for municipal waste supervisors and field workers in Glyfada Municipality to collect and export data about street waste bin locations. The application allows users to log waste bins with GPS coordinates and other details while supporting offline functionality. Designed as an MVP for Glyfada with plans to expand to all Greek municipalities.
 
 ## User Preferences
 
@@ -38,10 +38,17 @@ The application follows a full-stack architecture with a clear separation betwee
 
 ### Data Models
 The application centers around the `binSurveyEntries` table with the following fields:
+- Municipality name (currently static "Glyfada" for MVP)
 - GPS coordinates (latitude/longitude)
-- Street selection from predefined Glyfada streets
+- Street selection from comprehensive Glyfada street database (180+ streets)
 - Multiple bin types (Green, Blue, Brown, Yellow)
-- Quantity, photos, comments, and sync status
+- Quantity, comments, and sync status
+
+### Street Selection Features
+- **GPS-Based Filtering**: Shows streets within 2km radius of current location
+- **Search Functionality**: Real-time search through all Glyfada streets
+- **Comprehensive Database**: Complete list of Glyfada Municipality streets
+- **MVP Architecture**: Static municipality field, ready for dynamic expansion
 
 ### Mobile Features
 - **GPS Integration**: Real-time location capture with accuracy tracking

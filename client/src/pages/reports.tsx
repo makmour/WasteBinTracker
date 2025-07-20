@@ -9,6 +9,7 @@ import { apiRequest } from "@/lib/queryClient";
 import type { BinSurveyEntry } from "@shared/schema";
 
 interface StreetReport {
+  municipality: string;
   street: string;
   totalBins: number;
   binCounts: {
@@ -88,6 +89,7 @@ export default function Reports() {
         .datetime;
 
       return {
+        municipality: streetEntries[0].municipality,
         street,
         totalBins,
         binCounts,
@@ -106,8 +108,9 @@ export default function Reports() {
   const handleExportReport = () => {
     const reports = generateStreetReports();
     const csvContent = [
-      ['Street', 'Total Bins', 'Green', 'Blue', 'Brown', 'Yellow', 'Surveys', 'Last Survey'].join(','),
+      ['Municipality', 'Street', 'Total Bins', 'Green', 'Blue', 'Brown', 'Yellow', 'Surveys', 'Last Survey'].join(','),
       ...reports.map(report => [
+        `"${report.municipality}"`,
         `"${report.street}"`,
         report.totalBins,
         report.binCounts.Green,

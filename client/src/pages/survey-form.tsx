@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { insertBinSurveyEntrySchema, GLYFADA_STREETS, BIN_TYPES, type InsertBinSurveyEntry } from "@shared/schema";
+import StreetSelector from "@/components/ui/street-selector";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useGeolocation } from "@/hooks/use-geolocation";
@@ -12,7 +13,6 @@ import LocationCard from "@/components/ui/location-card";
 import BinCounter from "@/components/ui/bin-counter";
 import BottomNav from "@/components/ui/bottom-nav";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Save, RotateCcw, MapPin, RefreshCw } from "lucide-react";
@@ -20,6 +20,7 @@ import { Save, RotateCcw, MapPin, RefreshCw } from "lucide-react";
 const formSchema = insertBinSurveyEntrySchema.omit({
   binTypes: true,
   quantity: true,
+  municipality: true, // Handled separately
 });
 
 interface BinCounts {
@@ -142,6 +143,7 @@ export default function SurveyForm() {
     });
 
     const submissionData: InsertBinSurveyEntry = {
+      municipality: "Glyfada", // Static for MVP
       street: data.street,
       latitude: location.latitude,
       longitude: location.longitude,
@@ -176,29 +178,20 @@ export default function SurveyForm() {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Street Selection */}
+            {/* Municipality & Street Selection */}
             <FormField
               control={form.control}
               name="street"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    Street <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="bg-gray-50">
-                        <SelectValue placeholder="Select a street..." />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {GLYFADA_STREETS.map((street) => (
-                        <SelectItem key={street} value={street}>
-                          {street}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <StreetSelector
+                      value={field.value || ""}
+                      onChange={field.onChange}
+                      location={location}
+                      className="space-y-3"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
