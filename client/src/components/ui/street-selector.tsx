@@ -60,10 +60,15 @@ export default function StreetSelector({ value, onChange, location, className }:
     
     const streets = Array.from(municipality.streets);
     
-    if (viewMode === "search" && searchTerm) {
-      return streets.filter(street => 
-        street.toLowerCase().includes(searchTerm.toLowerCase())
-      ).slice(0, 20); // Limit results for performance
+    if (viewMode === "search") {
+      if (searchTerm.trim()) {
+        return streets.filter(street => 
+          street.toLowerCase().includes(searchTerm.toLowerCase())
+        ).slice(0, 20); // Limit results for performance
+      } else {
+        // Show all streets when in search mode but no search term
+        return streets.slice(0, 20);
+      }
     }
     
     if (viewMode === "nearby" && location) {
@@ -165,7 +170,7 @@ export default function StreetSelector({ value, onChange, location, className }:
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
-              placeholder="Search for a street..."
+              placeholder="Search for a street... (e.g. 'Metaxa', 'Vouliagmenis')"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -177,7 +182,8 @@ export default function StreetSelector({ value, onChange, location, className }:
         <div className="text-xs text-gray-500">
           {viewMode === "nearby" && !location && "Enable GPS to see nearby streets"}
           {viewMode === "nearby" && location && `Showing streets within 2km of your location`}
-          {viewMode === "search" && "Type to search for a specific street"}
+          {viewMode === "search" && searchTerm && `Found ${filteredStreets.length} streets matching "${searchTerm}"`}
+          {viewMode === "search" && !searchTerm && `Search through ${municipality?.streets.length || 0} available streets`}
           {viewMode === "all" && "Browse all available streets"}
         </div>
 
